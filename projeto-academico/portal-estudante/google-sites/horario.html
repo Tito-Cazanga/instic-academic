@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGA — Horário</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+  <!-- CSS inline (Google Sites friendly) -->
+  <style>
+  :root{--primary:#1a3a6b;--primary-light:#2355a0;--accent:#f59e0b;--accent-dark:#d97706;--success:#16a34a;--danger:#dc2626;--info:#0891b2;--bg-page:#f0f4f8;--bg-card:#ffffff;--text-main:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--radius:12px;--shadow-sm:0 2px 8px rgba(26,58,107,.08);--shadow-md:0 6px 24px rgba(26,58,107,.12);--transition:.2s ease}*{box-sizing:border-box}body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg-page);color:var(--text-main);font-size:15px;line-height:1.6}.sga-navbar{background:var(--primary);box-shadow:0 2px 16px rgba(0,0,0,.2);padding:.6rem 0}.brand-icon{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--primary)}.brand-icon-sm{width:30px;height:30px;font-size:1rem}.brand-name{font-size:1.1rem;font-weight:700;color:#fff;line-height:1}.brand-sub{font-size:.65rem;color:rgba(255,255,255,.6);letter-spacing:.03em}.sga-navbar .nav-link{color:rgba(255,255,255,.8)!important;font-size:.88rem;padding:.45rem .75rem!important;border-radius:6px;transition:var(--transition)}.sga-navbar .nav-link:hover,.sga-navbar .nav-link.active{color:#fff!important;background:rgba(255,255,255,.12)}.page-header{background:linear-gradient(135deg,var(--primary),var(--primary-light));padding:2.5rem 0;color:#fff}.page-header h1{font-size:1.8rem;font-weight:800;margin-bottom:.25rem}.page-header p{color:rgba(255,255,255,.75);margin:0}.sga-footer{background:#0f2444;padding:3rem 0 1.5rem;margin-top:auto}#horarioTable{border-collapse:collapse}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sga-navbar sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div><span class="brand-name">SGA</span><span class="brand-sub d-block">Sistema de Gestão Académica</span></div>
+    </a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house me-1"></i>Início</a></li>
+        <li class="nav-item"><a class="nav-link" href="inscricao.html"><i class="bi bi-pencil-square me-1"></i>Inscrição</a></li>
+        <li class="nav-item"><a class="nav-link" href="consulta.html"><i class="bi bi-search me-1"></i>Consultar</a></li>
+        <li class="nav-item"><a class="nav-link" href="propinas.html"><i class="bi bi-credit-card me-1"></i>Propinas</a></li>
+        <li class="nav-item"><a class="nav-link active" href="horario.html"><i class="bi bi-calendar3 me-1"></i>Horário</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1><i class="bi bi-calendar3 me-2"></i>Horário Semanal</h1>
+    <p>Consulte as aulas das suas disciplinas inscritas — 2.º Ano · LEI · 2025/2026</p>
+  </div>
+</div>
+
+<div class="container-fluid px-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div class="d-flex gap-2 flex-wrap">
+      <span class="badge rounded-pill" style="background:#1a3a6b;padding:.5rem .9rem">&#9632; Teórica</span>
+      <span class="badge rounded-pill" style="background:#0891b2;padding:.5rem .9rem">&#9632; Prática</span>
+      <span class="badge rounded-pill" style="background:#16a34a;padding:.5rem .9rem">&#9632; Lab.</span>
+    </div>
+    <button class="btn btn-outline-primary btn-sm" onclick="window.print()">
+      <i class="bi bi-printer me-1"></i>Imprimir Horário
+    </button>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered text-center align-middle" id="horarioTable" style="min-width:900px">
+      <thead>
+        <tr style="background:#1a3a6b;color:#fff">
+          <th style="width:90px">Hora</th>
+          <th>Segunda</th>
+          <th>Terça</th>
+          <th>Quarta</th>
+          <th>Quinta</th>
+          <th>Sexta</th>
+          <th>Sábado</th>
+        </tr>
+      </thead>
+      <tbody id="horarioBody"></tbody>
+    </table>
+  </div>
+
+  <div class="row g-3 mt-2" id="legendaDiscs"></div>
+</div>
+
+<footer class="sga-footer mt-5">
+  <div class="container"><p class="text-center text-muted small mb-0">© 2026 INSTIC — Universidade de Luanda</p></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const HORAS = ['07:00 – 08:30','08:30 – 10:00','10:00 – 11:30','11:30 – 13:00','14:00 – 15:30','15:30 – 17:00','17:00 – 18:30','18:30 – 20:00'];
+const DIAS  = ['seg','ter','qua','qui','sex','sab'];
+
+const HORARIO = {
+  'INF201': { nome:'Estruturas de Dados', docente:'Prof. Carlos Lima',     cor:'#1a3a6b', slots:[{dia:'seg',hora:0,tipo:'Teórica',sala:'A-102'},{dia:'qua',hora:2,tipo:'Prática',sala:'Lab-1'}] },
+  'BD201':  { nome:'Bases de Dados I',    docente:'Prof. Luísa Ferreira', cor:'#0891b2', slots:[{dia:'ter',hora:1,tipo:'Teórica',sala:'B-201'},{dia:'qui',hora:3,tipo:'Lab.',sala:'Lab-2'}] },
+  'SO201':  { nome:'Sistemas Operativos', docente:'Prof. Rui Mendes',      cor:'#16a34a', slots:[{dia:'ter',hora:3,tipo:'Teórica',sala:'A-103'},{dia:'sex',hora:0,tipo:'Prática',sala:'Lab-1'}] },
+  'INF202': { nome:'POO',                 docente:'Prof. Carlos Lima',     cor:'#7c3aed', slots:[{dia:'qua',hora:4,tipo:'Teórica',sala:'A-101'},{dia:'sab',hora:1,tipo:'Lab.',sala:'Lab-3'}] },
+};
+
+const tbody = document.getElementById('horarioBody');
+HORAS.forEach((hora, hi) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td class="fw-semibold small text-muted bg-light">${hora}</td>`;
+  DIAS.forEach(dia => {
+    let celula = '<td></td>';
+    for (const [cod, disc] of Object.entries(HORARIO)) {
+      const slot = disc.slots.find(s => s.dia === dia && s.hora === hi);
+      if (slot) {
+        celula = `<td style="background:${disc.cor}10;border-left:3px solid ${disc.cor}">
+          <div style="font-size:.78rem">
+            <strong style="color:${disc.cor}">${disc.nome}</strong><br>
+            <span class="text-muted">${disc.docente}</span><br>
+            <span class="badge" style="background:${disc.cor};font-size:.65rem">${slot.tipo}</span>
+            <span class="text-muted" style="font-size:.7rem"> · ${slot.sala}</span>
+          </div>
+        </td>`;
+        break;
+      }
+    }
+    tr.innerHTML += celula;
+  });
+  tbody.appendChild(tr);
+});
+
+const leg = document.getElementById('legendaDiscs');
+for (const [cod, disc] of Object.entries(HORARIO)) {
+  leg.innerHTML += `
+    <div class="col-sm-6 col-lg-3">
+      <div class="d-flex align-items-center gap-2 p-2 bg-white rounded-3 border">
+        <div style="width:12px;height:12px;border-radius:3px;background:${disc.cor};flex-shrink:0"></div>
+        <div>
+          <div style="font-size:.82rem;font-weight:600">${disc.nome}</div>
+          <div style="font-size:.72rem;color:#64748b">${disc.docente}</div>
+        </div>
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
+

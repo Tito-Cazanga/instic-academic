@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGA Admin — Inscrições</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="../portal-estudante/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <div class="brand-icon brand-icon-sm"><i class="bi bi-mortarboard-fill"></i></div>
+      <div><div class="sidebar-logo-text">SGA Admin</div><div class="sidebar-logo-sub">Secretaria Académica</div></div>
+    </div>
+    <nav class="sidebar-menu">
+      <div class="sidebar-section">Principal</div>
+      <a class="sidebar-item" href="dashboard.html"><i class="bi bi-speedometer2"></i>Dashboard</a>
+      <a class="sidebar-item active" href="inscricoes.html"><i class="bi bi-list-check"></i>Inscrições<span class="sidebar-badge" id="sb-pend">0</span></a>
+      <a class="sidebar-item" href="estudantes.html"><i class="bi bi-people"></i>Estudantes</a>
+      <div class="sidebar-section">Gestão</div>
+      <a class="sidebar-item" href="propinas-admin.html"><i class="bi bi-credit-card"></i>Propinas</a>
+      <a class="sidebar-item" href="disciplinas-admin.html"><i class="bi bi-book"></i>Disciplinas</a>
+      <div class="sidebar-section">Documentos</div>
+      <a class="sidebar-item" href="documentos.html"><i class="bi bi-file-earmark-text"></i>Comprovativos</a>
+      <a class="sidebar-item" href="relatorios.html"><i class="bi bi-bar-chart-line"></i>Relatórios</a>
+      <div class="sidebar-section">Sistema</div>
+      <a class="sidebar-item" href="../portal-estudante/index.html"><i class="bi bi-box-arrow-left"></i>Portal Estudante</a>
+    </nav>
+    <div class="p-3 border-top border-secondary">
+      <div class="d-flex align-items-center gap-2">
+        <div class="brand-icon brand-icon-sm" style="background:rgba(255,255,255,.15)"><i class="bi bi-person-fill text-white"></i></div>
+        <div><div style="font-size:.8rem;color:#fff;font-weight:600">Secretaria</div><div style="font-size:.68rem;color:rgba(255,255,255,.5)">admin@instic.ao</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <div class="admin-topbar-title">Gestão de Inscrições</div>
+        <small class="text-muted">Validação e acompanhamento das inscrições em disciplinas</small>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" onclick="exportarLista()"><i class="bi bi-download me-1"></i>Exportar</button>
+        <button class="btn btn-primary btn-sm" onclick="abrirFiltros()"><i class="bi bi-funnel me-1"></i>Filtros</button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- STATS RÁPIDAS -->
+      <div class="row g-3 mb-4">
+        <div class="col-sm-3">
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background:#e0e7ff"><i class="bi bi-inbox-fill text-primary" style="font-size:1.4rem"></i></div>
+            <div><div class="stat-card-val" id="cnt-total">0</div><div class="stat-card-label">Total</div></div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background:#fef3c7"><i class="bi bi-hourglass-split text-warning" style="font-size:1.4rem"></i></div>
+            <div><div class="stat-card-val" id="cnt-pend" style="color:#d97706">0</div><div class="stat-card-label">Pendentes</div></div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background:#dcfce7"><i class="bi bi-check-circle-fill text-success" style="font-size:1.4rem"></i></div>
+            <div><div class="stat-card-val" id="cnt-val" style="color:#16a34a">0</div><div class="stat-card-label">Validadas</div></div>
+          </div>
+        </div>
+        <div class="col-sm-3">
+          <div class="stat-card">
+            <div class="stat-card-icon" style="background:#fee2e2"><i class="bi bi-x-circle-fill text-danger" style="font-size:1.4rem"></i></div>
+            <div><div class="stat-card-val" id="cnt-rej" style="color:#dc2626">0</div><div class="stat-card-label">Rejeitadas</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="form-card mb-3" id="painelFiltros" style="display:none">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Estado</label>
+            <select class="form-select form-select-sm" id="filtroEstado" onchange="filtrar()">
+              <option value="">Todos</option>
+              <option value="Pendente">Pendente</option>
+              <option value="Validada">Validada</option>
+              <option value="Rejeitada">Rejeitada</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-bold">Curso</label>
+            <select class="form-select form-select-sm" id="filtroCurso" onchange="filtrar()">
+              <option value="">Todos os Cursos</option>
+              <option value="LEI">LEI</option>
+              <option value="LGI">LGI</option>
+              <option value="LCC">LCC</option>
+              <option value="TSI">TSI</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-bold">Pesquisar</label>
+            <input type="text" class="form-control form-control-sm" id="filtroPesq" placeholder="Nome, N.º Aluno ou Referência..." oninput="filtrar()" />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-outline-secondary btn-sm w-100" onclick="limparFiltros()"><i class="bi bi-x-circle me-1"></i>Limpar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABELA -->
+      <div class="form-card p-0">
+        <div class="table-responsive">
+          <table class="table sga-table mb-0">
+            <thead>
+              <tr>
+                <th>Referência</th>
+                <th>Estudante</th>
+                <th>Curso</th>
+                <th>Data</th>
+                <th>Propinas</th>
+                <th>Disciplinas</th>
+                <th>Estado</th>
+                <th class="text-center">Acção</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaInscricoes"></tbody>
+          </table>
+        </div>
+        <div class="d-flex align-items-center justify-content-between px-3 py-2 border-top">
+          <small class="text-muted" id="infoTotal"></small>
+          <div class="d-flex gap-1" id="paginacao"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALHE / VALIDAÇÃO -->
+<div class="modal fade" id="modalDetalhe" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header" style="background:var(--primary);color:#fff">
+        <h5 class="modal-title"><i class="bi bi-clipboard-check me-2"></i>Detalhe da Inscrição</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3 mb-3" id="detalheInfo"></div>
+        <hr />
+        <h6 class="fw-bold text-primary mb-2"><i class="bi bi-book me-2"></i>Disciplinas Seleccionadas</h6>
+        <ul id="detalheDiscs" class="list-group list-group-flush mb-3"></ul>
+        <div id="areaRejeicao" style="display:none">
+          <hr />
+          <label class="form-label fw-bold text-danger">Motivo de Rejeição <span class="text-danger">*</span></label>
+          <textarea class="form-control" id="motivoRejeicao" rows="3" placeholder="Descreva o motivo da rejeição desta inscrição..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999">
+  <div id="toast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold" id="toastMsg"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── DADOS DE DEMONSTRAÇÃO ────────────────────────────────────────
+const DISCIPLINAS_MAP = {
+  INF201:"Estruturas de Dados", BD201:"Bases de Dados I", SO201:"Sistemas Operativos",
+  INF202:"POO", BD202:"Bases de Dados II", MAT201:"Cálculo Numérico",
+  IA301:"Inteligência Artificial", WEB301:"Desenvolvimento Web",
+  BD201:"Bases de Dados I", GES101:"Fundamentos de Gestão",
+};
+const CURSO_MAP = { LEI:"Lic. Eng. Informática", LGI:"Lic. Gestão Informática", LCC:"Lic. Ciências Computação", TSI:"Tec. Sistemas Informação" };
+
+function gerarDemos() {
+  const nomes = [
+    "Maria João da Silva Ferreira","Carlos Manuel Mendes","Ana Beatriz Santos Lima",
+    "Pedro António Rodrigues","Sofia Maria Nascimento","Rui Alexandre Costa",
+    "Beatriz Lopes Ferreira","Nelson Paulo Cardoso","Andreia Filipa Sousa",
+    "Hugo Miguel Tavares","Diana Cristina Pinto","Hélder Vieira Santos",
+    "Catarina Nunes Alves","Fábio Marques Dias","Inês Rodrigues Gomes",
+    "Tiago Ferreira Lima","Joana Marta Costa","Eduardo José Baptista",
+    "Lénia Patrícia Matos","Armando Silva Neto",
+  ];
+  const cursos = ["LEI","LEI","LEI","LGI","LCC","TSI","LEI","LGI","LEI","LCC","LEI","TSI","LGI","LEI","LEI","LCC","LEI","LGI","TSI","LEI"];
+  const estados = ["Pendente","Pendente","Validada","Validada","Pendente","Validada","Rejeitada","Pendente","Validada","Validada","Pendente","Validada","Pendente","Validada","Pendente","Validada","Pendente","Rejeitada","Validada","Pendente"];
+  const discOptions = [
+    "INF201,BD201,SO201,INF202,BD202","INF201,BD201,SO201,INF202,MAT201",
+    "BD201,SO201,INF202,MAT201,BD202","GES101,INF201,MAT201,BD201",
+    "INF201,IA301,WEB301,BD202","INF201,BD201,MAT201,SO201",
+  ];
+  return nomes.map((nome,i) => ({
+    ref: `INS-2026-${1230+i}`,
+    numAluno: `20240${(1234+i).toString().padStart(6,'0')}`,
+    nome,
+    email: nome.split(" ")[0].toLowerCase() + "." + nome.split(" ").pop().toLowerCase() + "@instic.ao",
+    curso: cursos[i],
+    anoCurso: (i%4)+1,
+    anoLectivo: "2025/2026",
+    data: `${14+(i%10)}/06/2026`,
+    propinas: i===3||i===17 ? "Dívida" : "Regularizado",
+    disciplinas: discOptions[i%discOptions.length],
+    estado: estados[i],
+    motivo: estados[i]==="Rejeitada" ? "Propinas em dívida no momento da validação." : "",
+  }));
+}
+
+// Carregar do localStorage ou usar demos
+let inscricoes = JSON.parse(localStorage.getItem("sga_inscricoes") || "null");
+if (!inscricoes || inscricoes.length === 0) {
+  inscricoes = gerarDemos();
+  localStorage.setItem("sga_inscricoes", JSON.stringify(inscricoes));
+}
+
+let filtradas = [...inscricoes];
+let paginaAtual = 1;
+const POR_PAGINA = 8;
+let inscricaoActual = null;
+
+// ── RENDER ───────────────────────────────────────────────────────
+function atualizarStats() {
+  const total = inscricoes.length;
+  const pend  = inscricoes.filter(i=>i.estado==="Pendente").length;
+  const val   = inscricoes.filter(i=>i.estado==="Validada").length;
+  const rej   = inscricoes.filter(i=>i.estado==="Rejeitada").length;
+  document.getElementById("cnt-total").textContent = total;
+  document.getElementById("cnt-pend").textContent  = pend;
+  document.getElementById("cnt-val").textContent   = val;
+  document.getElementById("cnt-rej").textContent   = rej;
+  document.getElementById("sb-pend").textContent   = pend;
+}
+
+function renderTabela() {
+  atualizarStats();
+  const inicio = (paginaAtual-1)*POR_PAGINA;
+  const pagina = filtradas.slice(inicio, inicio+POR_PAGINA);
+  const tbody = document.getElementById("tabelaInscricoes");
+  tbody.innerHTML = "";
+
+  if (!pagina.length) {
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4"><i class="bi bi-inbox fs-3 d-block mb-2"></i>Nenhuma inscrição encontrada.</td></tr>`;
+    return;
+  }
+
+  pagina.forEach(insc => {
+    const estadoClass = { Pendente:"status-pendente", Validada:"status-validada", Rejeitada:"status-rejeitada" };
+    const estadoIcon  = { Pendente:"bi-hourglass-split", Validada:"bi-check-circle-fill", Rejeitada:"bi-x-circle-fill" };
+    const propBadge   = insc.propinas==="Regularizado"
+      ? `<span class="badge" style="background:#dcfce7;color:#166534"><i class="bi bi-check2 me-1"></i>Em dia</span>`
+      : `<span class="badge" style="background:#fee2e2;color:#991b1b"><i class="bi bi-exclamation-triangle me-1"></i>Dívida</span>`;
+    const discs = insc.disciplinas.split(",");
+
+    tbody.innerHTML += `
+      <tr>
+        <td><code class="small text-primary">${insc.ref}</code></td>
+        <td>
+          <div class="fw-semibold" style="font-size:.88rem">${insc.nome}</div>
+          <div class="text-muted" style="font-size:.75rem">${insc.numAluno}</div>
+        </td>
+        <td><span class="badge bg-light text-dark border">${insc.curso}</span><br><small class="text-muted">${insc.anoCurso}.º Ano</small></td>
+        <td><small>${insc.data}</small></td>
+        <td>${propBadge}</td>
+        <td><span class="badge" style="background:#e0e7ff;color:#1e3a8a">${discs.length} disciplina${discs.length>1?"s":""}</span></td>
+        <td><span class="status-badge ${estadoClass[insc.estado]}"><i class="bi ${estadoIcon[insc.estado]} me-1"></i>${insc.estado}</span></td>
+        <td class="text-center">
+          <button class="btn btn-sm btn-outline-primary py-0 px-2 me-1" onclick="abrirDetalhe('${insc.ref}')" title="Ver detalhe">
+            <i class="bi bi-eye"></i>
+          </button>
+          ${insc.estado==="Pendente" ? `
+          <button class="btn btn-sm btn-success py-0 px-2 me-1" onclick="acaoRapida('${insc.ref}','Validada')" title="Validar">
+            <i class="bi bi-check-lg"></i>
+          </button>
+          <button class="btn btn-sm btn-danger py-0 px-2" onclick="abrirRejeicao('${insc.ref}')" title="Rejeitar">
+            <i class="bi bi-x-lg"></i>
+          </button>` : ""}
+        </td>
+      </tr>`;
+  });
+
+  // Paginação
+  const totalPags = Math.ceil(filtradas.length/POR_PAGINA);
+  const pagDiv = document.getElementById("paginacao");
+  pagDiv.innerHTML = "";
+  for (let p=1;p<=totalPags;p++) {
+    pagDiv.innerHTML += `<button class="btn btn-sm ${p===paginaAtual?"btn-primary":"btn-outline-secondary"}" onclick="irPagina(${p})">${p}</button>`;
+  }
+  document.getElementById("infoTotal").textContent = `A mostrar ${inicio+1}–${Math.min(inicio+POR_PAGINA,filtradas.length)} de ${filtradas.length} inscrição(ões)`;
+}
+
+function irPagina(p) { paginaAtual=p; renderTabela(); }
+
+// ── FILTROS ──────────────────────────────────────────────────────
+function abrirFiltros() {
+  const p = document.getElementById("painelFiltros");
+  p.style.display = p.style.display==="none" ? "block" : "none";
+}
+function filtrar() {
+  const estado = document.getElementById("filtroEstado").value;
+  const curso  = document.getElementById("filtroCurso").value;
+  const pesq   = document.getElementById("filtroPesq").value.toLowerCase();
+  filtradas = inscricoes.filter(i =>
+    (!estado || i.estado===estado) &&
+    (!curso  || i.curso===curso) &&
+    (!pesq   || i.nome.toLowerCase().includes(pesq) || i.numAluno.includes(pesq) || i.ref.toLowerCase().includes(pesq))
+  );
+  paginaAtual=1;
+  renderTabela();
+}
+function limparFiltros() {
+  ["filtroEstado","filtroCurso"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("filtroPesq").value="";
+  filtradas=[...inscricoes]; paginaAtual=1; renderTabela();
+}
+
+// ── DETALHE / MODAL ──────────────────────────────────────────────
+function abrirDetalhe(ref) {
+  inscricaoActual = inscricoes.find(i=>i.ref===ref);
+  if (!inscricaoActual) return;
+  const i = inscricaoActual;
+
+  document.getElementById("detalheInfo").innerHTML = `
+    ${campo("Referência","<code>"+i.ref+"</code>")}
+    ${campo("N.º Estudante",i.numAluno)}
+    ${campo("Nome Completo",`<strong>${i.nome}</strong>`)}
+    ${campo("Email",i.email)}
+    ${campo("Curso",CURSO_MAP[i.curso]||i.curso)}
+    ${campo("Ano",i.anoCurso+".º Ano · "+i.anoLectivo)}
+    ${campo("Data Submissão",i.data)}
+    ${campo("Propinas",i.propinas==="Regularizado"
+      ? `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill me-1"></i>Regularizado</span>`
+      : `<span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Dívida</span>`)}
+    ${campo("Estado",`<span class="status-badge status-${i.estado.toLowerCase()}">${i.estado}</span>`)}
+    ${i.motivo ? campo("Motivo Rejeição","<em>"+i.motivo+"</em>") : ""}
+  `;
+
+  const ul = document.getElementById("detalheDiscs");
+  ul.innerHTML = "";
+  i.disciplinas.split(",").forEach(cod => {
+    ul.innerHTML += `<li class="list-group-item d-flex justify-content-between py-2 border-0 border-bottom">
+      <span><i class="bi bi-book-half text-primary me-2"></i>${DISCIPLINAS_MAP[cod]||cod}</span>
+      <code class="small text-muted">${cod}</code>
+    </li>`;
+  });
+
+  document.getElementById("areaRejeicao").style.display="none";
+  document.getElementById("motivoRejeicao").value="";
+
+  const footer = document.getElementById("modalFooter");
+  if (i.estado==="Pendente") {
+    footer.innerHTML = `
+      <button class="btn btn-success px-4" onclick="acaoModal('Validada')"><i class="bi bi-check-circle-fill me-2"></i>Validar Inscrição</button>
+      <button class="btn btn-danger px-4" onclick="mostrarRejeicao()"><i class="bi bi-x-circle-fill me-2"></i>Rejeitar</button>
+      <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+    `;
+  } else {
+    footer.innerHTML = `<button class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>`;
+    if (i.estado==="Validada") {
+      footer.innerHTML = `
+        <button class="btn btn-outline-primary" onclick="gerarPDF('${i.ref}')"><i class="bi bi-file-earmark-pdf me-1"></i>Comprovativo PDF</button>
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Fechar</button>
+      `;
+    }
+  }
+
+  new bootstrap.Modal(document.getElementById("modalDetalhe")).show();
+}
+
+function campo(label, value) {
+  return `<div class="col-md-6">
+    <div class="bg-light rounded-3 p-2">
+      <div class="small text-muted mb-1">${label}</div>
+      <div style="font-size:.9rem">${value}</div>
+    </div>
+  </div>`;
+}
+
+function mostrarRejeicao() {
+  document.getElementById("areaRejeicao").style.display="block";
+  const footer = document.getElementById("modalFooter");
+  footer.innerHTML = `
+    <button class="btn btn-danger px-4" onclick="acaoModal('Rejeitada')"><i class="bi bi-x-circle-fill me-2"></i>Confirmar Rejeição</button>
+    <button class="btn btn-outline-secondary" onclick="ocultarRejeicao()">Cancelar</button>
+  `;
+}
+function ocultarRejeicao() {
+  document.getElementById("areaRejeicao").style.display="none";
+  document.getElementById("motivoRejeicao").value="";
+  abrirDetalhe(inscricaoActual.ref);
+}
+
+function abrirRejeicao(ref) { abrirDetalhe(ref); setTimeout(mostrarRejeicao,400); }
+
+function acaoModal(estado) {
+  if (estado==="Rejeitada") {
+    const motivo = document.getElementById("motivoRejeicao").value.trim();
+    if (!motivo) { mostrarToast("Preencha o motivo da rejeição.","warning"); return; }
+    inscricaoActual.motivo = motivo;
+  }
+  atualizarEstado(inscricaoActual.ref, estado);
+  bootstrap.Modal.getInstance(document.getElementById("modalDetalhe")).hide();
+}
+
+function acaoRapida(ref, estado) {
+  if (estado==="Rejeitada") { abrirRejeicao(ref); return; }
+  atualizarEstado(ref, estado);
+}
+
+function atualizarEstado(ref, estado) {
+  const idx = inscricoes.findIndex(i=>i.ref===ref);
+  if (idx<0) return;
+  inscricoes[idx].estado = estado;
+  inscricoes[idx].dataValidacao = new Date().toLocaleDateString("pt-PT");
+  localStorage.setItem("sga_inscricoes", JSON.stringify(inscricoes));
+  filtradas = filtradas.map(i=>i.ref===ref?{...i,estado}:i);
+  renderTabela();
+  const msgs = { Validada:"✓ Inscrição validada com sucesso! Comprovativo gerado.", Rejeitada:"✗ Inscrição rejeitada. Estudante notificado." };
+  const tipos = { Validada:"success", Rejeitada:"danger" };
+  mostrarToast(msgs[estado]||"Estado actualizado.", tipos[estado]||"info");
+}
+
+function gerarPDF(ref) {
+  mostrarToast("Em produção: Google Apps Script geraria o PDF e armazenaria no Google Drive.", "info");
+}
+
+function exportarLista() {
+  const csv = ["Referência,Nome,Curso,Data,Estado,Propinas,Disciplinas"];
+  filtradas.forEach(i => csv.push(`${i.ref},"${i.nome}",${i.curso},${i.data},${i.estado},${i.propinas},"${i.disciplinas}"`));
+  const blob = new Blob([csv.join("\n")], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "inscricoes_sga.csv";
+  a.click();
+}
+
+function mostrarToast(msg, tipo="info") {
+  const el = document.getElementById("toast");
+  el.className = `toast align-items-center border-0 text-bg-${tipo}`;
+  document.getElementById("toastMsg").textContent = msg;
+  new bootstrap.Toast(el, {delay:4000}).show();
+}
+
+// INIT
+filtradas = [...inscricoes];
+renderTabela();
+</script>
+</body>
+</html>

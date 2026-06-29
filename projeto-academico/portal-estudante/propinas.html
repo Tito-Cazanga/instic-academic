@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGA — Propinas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="styles.css" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sga-navbar sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div><span class="brand-name">SGA</span><span class="brand-sub d-block">Sistema de Gestão Académica</span></div>
+    </a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house me-1"></i>Início</a></li>
+        <li class="nav-item"><a class="nav-link" href="inscricao.html"><i class="bi bi-pencil-square me-1"></i>Inscrição</a></li>
+        <li class="nav-item"><a class="nav-link" href="consulta.html"><i class="bi bi-search me-1"></i>Consultar</a></li>
+        <li class="nav-item"><a class="nav-link active" href="propinas.html"><i class="bi bi-credit-card me-1"></i>Propinas</a></li>
+        <li class="nav-item"><a class="nav-link" href="horario.html"><i class="bi bi-calendar3 me-1"></i>Horário</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2">
+      <li class="breadcrumb-item"><a href="index.html">Início</a></li>
+      <li class="breadcrumb-item active">Propinas</li>
+    </ol></nav>
+    <h1><i class="bi bi-credit-card me-2"></i>Situação de Propinas</h1>
+    <p>Consulte os valores, pagamentos realizados e situação financeira actualizada.</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <!-- Pesquisa -->
+  <div class="form-card mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Número de Estudante</label>
+        <input type="text" class="form-control" id="pesqNum" placeholder="Ex: 2024001234" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Ano Lectivo</label>
+        <select class="form-select" id="pesqAno">
+          <option value="2025/2026" selected>2025 / 2026</option>
+          <option value="2024/2025">2024 / 2025</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" onclick="consultarPropinas()">
+          <i class="bi bi-search me-1"></i>Consultar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="propinasContent" style="display:none">
+    <!-- Resumo financeiro -->
+    <div class="row g-3 mb-4">
+      <div class="col-sm-4">
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#dcfce7"><i class="bi bi-check-circle-fill text-success"></i></div>
+          <div>
+            <div class="stat-card-val" id="val-pago" style="color:#16a34a"></div>
+            <div class="stat-card-label">Total Pago</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#fee2e2"><i class="bi bi-exclamation-circle-fill text-danger"></i></div>
+          <div>
+            <div class="stat-card-val" id="val-divida" style="color:#dc2626"></div>
+            <div class="stat-card-label">Em Dívida</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="stat-card">
+          <div class="stat-card-icon" style="background:#e0e7ff"><i class="bi bi-receipt text-primary"></i></div>
+          <div>
+            <div class="stat-card-val" id="val-total"></div>
+            <div class="stat-card-label">Total do Ano</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progresso de pagamento -->
+    <div class="form-card mb-4">
+      <div class="d-flex justify-content-between mb-2">
+        <span class="fw-semibold">Progresso de Pagamento</span>
+        <span id="pct-label" class="fw-bold text-primary"></span>
+      </div>
+      <div class="progress mb-1">
+        <div class="progress-bar bg-success" id="prog-bar" style="width:0%"></div>
+      </div>
+      <small class="text-muted" id="prog-desc"></small>
+    </div>
+
+    <!-- Tabela de propinas mensais -->
+    <div class="form-card mb-4">
+      <h5 class="form-section-title"><i class="bi bi-table me-2"></i>Detalhe de Propinas Mensais</h5>
+      <div class="table-responsive">
+        <table class="table sga-table">
+          <thead>
+            <tr>
+              <th>Mês</th>
+              <th>Valor (AOA)</th>
+              <th>Data Vencimento</th>
+              <th>Data Pagamento</th>
+              <th>Estado</th>
+              <th>Recibo</th>
+            </tr>
+          </thead>
+          <tbody id="propinasTabela"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sga-footer mt-5">
+  <div class="container"><p class="text-center text-muted small mb-0">© 2026 INSTIC — Universidade de Luanda</p></div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const PROPINAS = [
+  { mes:'Outubro 2025',   valor:25000, venc:'31/10/2025', pago:'15/10/2025', estado:'Pago' },
+  { mes:'Novembro 2025',  valor:25000, venc:'30/11/2025', pago:'12/11/2025', estado:'Pago' },
+  { mes:'Dezembro 2025',  valor:25000, venc:'31/12/2025', pago:'20/12/2025', estado:'Pago' },
+  { mes:'Janeiro 2026',   valor:25000, venc:'31/01/2026', pago:'28/01/2026', estado:'Pago' },
+  { mes:'Fevereiro 2026', valor:25000, venc:'28/02/2026', pago:'25/02/2026', estado:'Pago' },
+  { mes:'Março 2026',     valor:25000, venc:'31/03/2026', pago:'29/03/2026', estado:'Pago' },
+  { mes:'Abril 2026',     valor:25000, venc:'30/04/2026', pago:null,         estado:'Pendente' },
+  { mes:'Maio 2026',      valor:25000, venc:'31/05/2026', pago:null,         estado:'Pendente' },
+  { mes:'Junho 2026',     valor:25000, venc:'30/06/2026', pago:null,         estado:'Pendente' },
+  { mes:'Julho 2026',     valor:25000, venc:'31/07/2026', pago:null,         estado:'Pendente' },
+];
+
+function fmt(n) { return n.toLocaleString('pt-AO') + ' AOA'; }
+
+function consultarPropinas() {
+  const num = document.getElementById('pesqNum').value.trim();
+  if (!num) { alert('Introduza o número de estudante.'); return; }
+
+  const total = PROPINAS.reduce((s,p) => s+p.valor, 0);
+  const pago  = PROPINAS.filter(p=>p.estado==='Pago').reduce((s,p)=>s+p.valor,0);
+  const divida = total - pago;
+  const pct    = Math.round((pago/total)*100);
+
+  document.getElementById('val-pago').textContent  = fmt(pago);
+  document.getElementById('val-divida').textContent = fmt(divida);
+  document.getElementById('val-total').textContent  = fmt(total);
+  document.getElementById('pct-label').textContent  = pct + '%';
+  document.getElementById('prog-bar').style.width   = pct + '%';
+  document.getElementById('prog-desc').textContent  = `${PROPINAS.filter(p=>p.estado==='Pago').length} de ${PROPINAS.length} mensalidades pagas`;
+
+  const tbody = document.getElementById('propinasTabela');
+  tbody.innerHTML = '';
+  PROPINAS.forEach((p,i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${p.mes}</strong></td>
+        <td>${fmt(p.valor)}</td>
+        <td>${p.venc}</td>
+        <td>${p.pago || '—'}</td>
+        <td><span class="status-badge ${p.estado==='Pago'?'status-validada':'status-pendente'}">
+          <i class="bi bi-${p.estado==='Pago'?'check-circle-fill':'clock'}"></i>${p.estado}
+        </span></td>
+        <td>
+          ${p.estado==='Pago'
+            ? `<button class="btn btn-sm btn-outline-primary" onclick="alert('Recibo ${i+1} – em produção, este botão descarrega o PDF do Google Drive.')"><i class="bi bi-download"></i></button>`
+            : '<span class="text-muted">—</span>'}
+        </td>
+      </tr>`;
+  });
+  document.getElementById('propinasContent').style.display = 'block';
+}
+</script>
+</body>
+</html>

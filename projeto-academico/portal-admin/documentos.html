@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGA Admin — Documentos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="../portal-estudante/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">
+      <div class="brand-icon brand-icon-sm"><i class="bi bi-mortarboard-fill"></i></div>
+      <div><div class="sidebar-logo-text">SGA Admin</div><div class="sidebar-logo-sub">Secretaria Académica</div></div>
+    </div>
+    <nav class="sidebar-menu">
+      <div class="sidebar-section">Principal</div>
+      <a class="sidebar-item" href="dashboard.html"><i class="bi bi-speedometer2"></i>Dashboard</a>
+      <a class="sidebar-item" href="inscricoes.html"><i class="bi bi-list-check"></i>Inscrições</a>
+      <a class="sidebar-item" href="estudantes.html"><i class="bi bi-people"></i>Estudantes</a>
+      <div class="sidebar-section">Documentos</div>
+      <a class="sidebar-item active" href="documentos.html"><i class="bi bi-file-earmark-text"></i>Comprovativos</a>
+      <a class="sidebar-item" href="relatorios.html"><i class="bi bi-bar-chart-line"></i>Relatórios</a>
+      <div class="sidebar-section">Sistema</div>
+      <a class="sidebar-item" href="../portal-estudante/index.html"><i class="bi bi-box-arrow-left"></i>Portal Estudante</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <div class="admin-topbar-title">Gestão de Documentos Académicos</div>
+        <small class="text-muted">Comprovativos de inscrição · Declarações de matrícula · Listas de turma</small>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="gerarLote()">
+        <i class="bi bi-file-earmark-pdf me-1"></i>Gerar em Lote
+      </button>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- TABS -->
+      <ul class="nav nav-tabs mb-4">
+        <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#tabComprovat"><i class="bi bi-file-earmark-check me-1"></i>Comprovativos</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabDeclaracoes"><i class="bi bi-file-text me-1"></i>Declarações</a></li>
+        <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#tabListas"><i class="bi bi-list-ol me-1"></i>Listas de Turma</a></li>
+      </ul>
+
+      <div class="tab-content">
+
+        <!-- ─── COMPROVATIVOS ─── -->
+        <div class="tab-pane fade show active" id="tabComprovat">
+          <div class="row g-3 mb-3">
+            <div class="col-md-5">
+              <input type="text" class="form-control" id="pesqComp" placeholder="🔍  Pesquisar por nome ou número de estudante..." oninput="filtrarDocs('comp')" />
+            </div>
+            <div class="col-md-3">
+              <select class="form-select" id="filtroCompCurso" onchange="filtrarDocs('comp')">
+                <option value="">Todos os Cursos</option>
+                <option value="LEI">LEI</option><option value="LGI">LGI</option>
+                <option value="LCC">LCC</option><option value="TSI">TSI</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-card p-0">
+            <div class="table-responsive">
+              <table class="table sga-table mb-0">
+                <thead><tr>
+                  <th>Referência</th><th>Estudante</th><th>Curso</th>
+                  <th>Emitido em</th><th>Estado</th><th class="text-center">Acções</th>
+                </tr></thead>
+                <tbody id="tbComp"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── DECLARAÇÕES ─── -->
+        <div class="tab-pane fade" id="tabDeclaracoes">
+          <div class="alert alert-info d-flex gap-2 mb-3">
+            <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+            <span>As declarações de matrícula são emitidas automaticamente após a validação da inscrição. Podem também ser geradas manualmente para inscrições validadas.</span>
+          </div>
+          <div class="form-card p-0">
+            <div class="table-responsive">
+              <table class="table sga-table mb-0">
+                <thead><tr>
+                  <th>N.º Declaração</th><th>Estudante</th><th>Curso</th>
+                  <th>Data Emissão</th><th>Finalidade</th><th class="text-center">Acções</th>
+                </tr></thead>
+                <tbody id="tbDecl"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── LISTAS DE TURMA ─── -->
+        <div class="tab-pane fade" id="tabListas">
+          <div class="row g-3 mb-3">
+            <div class="col-md-4">
+              <label class="form-label small fw-bold">Disciplina</label>
+              <select class="form-select" id="listaDisciplina" onchange="renderLista()">
+                <option value="">Seleccione a disciplina...</option>
+                <option value="INF201">INF201 — Estruturas de Dados</option>
+                <option value="BD201">BD201 — Bases de Dados I</option>
+                <option value="SO201">SO201 — Sistemas Operativos</option>
+                <option value="INF202">INF202 — POO</option>
+                <option value="BD202">BD202 — Bases de Dados II</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold">Curso</label>
+              <select class="form-select" id="listaCurso" onchange="renderLista()">
+                <option value="LEI">LEI — 2.º Ano</option>
+                <option value="LGI">LGI — 1.º Ano</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end gap-2">
+              <button class="btn btn-primary" onclick="renderLista()"><i class="bi bi-search me-1"></i>Gerar Lista</button>
+              <button class="btn btn-outline-success" onclick="exportarLista()"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</button>
+            </div>
+          </div>
+
+          <div id="listaContainer" style="display:none">
+            <!-- Cabeçalho da lista -->
+            <div class="form-card mb-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="fw-bold text-primary mb-1" id="listaTitulo"></h5>
+                  <p class="text-muted mb-0" id="listaSubtitulo"></p>
+                </div>
+                <div class="text-end">
+                  <div class="stat-card" style="width:auto;min-width:0">
+                    <div class="stat-card-icon" style="background:#dcfce7"><i class="bi bi-people-fill text-success"></i></div>
+                    <div><div class="stat-card-val" id="listaTotal" style="font-size:1.5rem">0</div><div class="stat-card-label">Inscritos</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-card p-0">
+              <div class="table-responsive">
+                <table class="table sga-table mb-0">
+                  <thead><tr><th>#</th><th>N.º Estudante</th><th>Nome Completo</th><th>Email</th><th>Data Validação</th><th>Assinatura</th></tr></thead>
+                  <tbody id="tbLista"></tbody>
+                </table>
+              </div>
+              <div class="p-3 border-top bg-light">
+                <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Lista gerada pelo INSTIC Academic em <strong id="dataGeracao"></strong> · Para uso académico e pedagógico.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index:9999">
+  <div id="toast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold" id="toastMsg"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── DADOS ────────────────────────────────────────────────────────
+const NOMES = ["Maria João da Silva","Carlos Manuel Mendes","Ana Beatriz Santos","Pedro Rodrigues","Sofia Nascimento",
+               "Rui Alexandre Costa","Beatriz Lopes","Nelson Cardoso","Andreia Sousa","Hugo Tavares",
+               "Diana Pinto","Hélder Vieira","Catarina Alves","Fábio Marques","Inês Rodrigues"];
+
+const COMPROVATIVOS = NOMES.map((n,i)=>({
+  ref:`INS-2026-${1230+i}`,
+  num:`20240${(1234+i).toString().padStart(6,'0')}`,
+  nome:n, curso:["LEI","LEI","LGI","LCC","LEI","LEI","LEI","LGI","LEI","LCC","LEI","TSI","LGI","LEI","LEI"][i],
+  data:`${14+(i%8)}/06/2026`, estado:i===3||i===11?"Pendente":"Emitido",
+  urlDrive:`https://drive.google.com/file/d/EXEMPLO_${i+1}/view`,
+}));
+
+const DECLARACOES = NOMES.slice(0,10).map((n,i)=>({
+  numDecl:`DM-2026-${1230+i}`,
+  num:`20240${(1234+i).toString().padStart(6,'0')}`,
+  nome:n, curso:["LEI","LEI","LGI","LCC","LEI","LEI","LEI","LGI","LEI","LCC"][i],
+  data:`${15+(i%6)}/06/2026`,
+  finalidade:["Uso académico geral","Candidatura a bolsa","Banco/Crédito","Uso geral","Candidatura a emprego","Uso académico","Reconhecimento externo","Banco","Uso geral","Candidatura"][i],
+}));
+
+const ESTUDANTES_LISTA = NOMES.map((n,i)=>({
+  num:`20240${(1234+i).toString().padStart(6,'0')}`,
+  nome:n,
+  email:n.split(" ")[0].toLowerCase()+"."+n.split(" ").pop().toLowerCase()+"@instic.ao",
+  data:`${14+(i%8)}/06/2026`,
+}));
+
+// ── RENDER COMPROVATIVOS ─────────────────────────────────────────
+let compFiltrados = [...COMPROVATIVOS];
+function filtrarDocs(tipo) {
+  const pesq = document.getElementById("pesqComp").value.toLowerCase();
+  const curso = document.getElementById("filtroCompCurso").value;
+  compFiltrados = COMPROVATIVOS.filter(c=>
+    (!pesq || c.nome.toLowerCase().includes(pesq) || c.num.includes(pesq)) &&
+    (!curso || c.curso===curso)
+  );
+  renderComprovat();
+}
+
+function renderComprovat() {
+  const tbody = document.getElementById("tbComp");
+  tbody.innerHTML = "";
+  compFiltrados.forEach((c,i) => {
+    const emitido = c.estado==="Emitido";
+    tbody.innerHTML += `<tr>
+      <td><code class="small text-primary">${c.ref}</code></td>
+      <td><div class="fw-semibold" style="font-size:.88rem">${c.nome}</div><small class="text-muted">${c.num}</small></td>
+      <td><span class="badge bg-light text-dark border">${c.curso}</span></td>
+      <td><small>${c.data}</small></td>
+      <td><span class="status-badge ${emitido?"status-validada":"status-pendente"}">
+        <i class="bi bi-${emitido?"check-circle-fill":"hourglass-split"} me-1"></i>${c.estado}
+      </span></td>
+      <td class="text-center">
+        <button class="btn btn-sm ${emitido?"btn-outline-danger":"btn-primary"} py-0 px-2 me-1" onclick="acaoComp(${i})">
+          <i class="bi bi-${emitido?"file-earmark-pdf":"arrow-repeat"} me-1"></i>${emitido?"PDF":"Gerar"}
+        </button>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="enviarEmail(${i})" title="Reenviar email">
+          <i class="bi bi-envelope"></i>
+        </button>
+      </td>
+    </tr>`;
+  });
+}
+
+function acaoComp(i) {
+  const c = compFiltrados[i];
+  if (c.estado==="Emitido") {
+    mostrarToast(`A abrir comprovativo de ${c.nome} no Google Drive...`,"info");
+  } else {
+    compFiltrados[i].estado="Emitido";
+    renderComprovat();
+    mostrarToast(`✓ Comprovativo de ${c.nome} gerado e enviado por email.`,"success");
+  }
+}
+
+function enviarEmail(i) {
+  mostrarToast(`Email reenviado para ${compFiltrados[i].email||compFiltrados[i].nome}.`,"info");
+}
+
+// ── RENDER DECLARAÇÕES ───────────────────────────────────────────
+function renderDeclaracoes() {
+  const tbody = document.getElementById("tbDecl");
+  tbody.innerHTML = "";
+  DECLARACOES.forEach(d => {
+    tbody.innerHTML += `<tr>
+      <td><code class="small text-primary">${d.numDecl}</code></td>
+      <td><div class="fw-semibold" style="font-size:.88rem">${d.nome}</div><small class="text-muted">${d.num}</small></td>
+      <td><span class="badge bg-light text-dark border">${d.curso}</span></td>
+      <td><small>${d.data}</small></td>
+      <td><small class="text-muted">${d.finalidade}</small></td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-outline-danger py-0 px-2 me-1" onclick="mostrarToast('A abrir declaração no Google Drive...','info')">
+          <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+        </button>
+        <button class="btn btn-sm btn-outline-secondary py-0 px-2" onclick="mostrarToast('Email reenviado.','success')">
+          <i class="bi bi-envelope"></i>
+        </button>
+      </td>
+    </tr>`;
+  });
+}
+
+// ── LISTA DE TURMA ───────────────────────────────────────────────
+const DISC_NAMES = {
+  INF201:"Estruturas de Dados", BD201:"Bases de Dados I", SO201:"Sistemas Operativos",
+  INF202:"Programação Orientada a Objectos", BD202:"Bases de Dados II",
+};
+
+function renderLista() {
+  const disc = document.getElementById("listaDisciplina").value;
+  const curso = document.getElementById("listaCurso").value;
+  if (!disc) { mostrarToast("Seleccione uma disciplina.","warning"); return; }
+
+  const cont = document.getElementById("listaContainer");
+  cont.style.display="block";
+  document.getElementById("listaTitulo").textContent = `Lista de Turma · ${DISC_NAMES[disc]||disc} (${disc})`;
+  document.getElementById("listaSubtitulo").textContent = `${curso} · 2.º Ano · Ano Lectivo 2025/2026 · Inscrições Validadas`;
+  document.getElementById("dataGeracao").textContent = new Date().toLocaleDateString("pt-PT",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit"});
+
+  // Filtrar estudantes que têm esta disciplina
+  const lista = ESTUDANTES_LISTA.filter((_,i)=> i%5!==3); // simular ~12 estudantes
+  document.getElementById("listaTotal").textContent = lista.length;
+
+  const tbody = document.getElementById("tbLista");
+  tbody.innerHTML = "";
+  lista.forEach((e,i) => {
+    tbody.innerHTML += `<tr>
+      <td class="text-muted">${i+1}</td>
+      <td><code class="small">${e.num}</code></td>
+      <td class="fw-semibold">${e.nome}</td>
+      <td><small class="text-muted">${e.email}</small></td>
+      <td><small>${e.data}</small></td>
+      <td style="border-bottom:1px solid #ccc;width:150px">&nbsp;</td>
+    </tr>`;
+  });
+}
+
+function exportarLista() {
+  mostrarToast("Em produção: Google Apps Script gera o PDF no Google Drive e envia link.","info");
+}
+
+function gerarLote() {
+  mostrarToast("Geração em lote iniciada. Todos os comprovativos pendentes serão processados pelo Google Apps Script.","primary");
+  setTimeout(()=>{
+    COMPROVATIVOS.forEach(c=>c.estado="Emitido");
+    renderComprovat();
+    mostrarToast(`✓ ${COMPROVATIVOS.length} comprovativos gerados e enviados por email.`,"success");
+  },2000);
+}
+
+function mostrarToast(msg, tipo="info") {
+  const el = document.getElementById("toast");
+  el.className = `toast align-items-center border-0 text-bg-${tipo}`;
+  document.getElementById("toastMsg").textContent = msg;
+  new bootstrap.Toast(el,{delay:4000}).show();
+}
+
+// INIT
+renderComprovat();
+renderDeclaracoes();
+</script>
+</body>
+</html>
