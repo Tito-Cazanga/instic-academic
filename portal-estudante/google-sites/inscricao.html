@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGA — Inscrição em Disciplinas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+  <!-- CSS inline (Google Sites friendly) -->
+  <style>
+  /* ============================================================
+     SGA — Sistema de Gestão Académica
+     Folha de Estilos Principal (inline)
+     ============================================================ */
+
+  :root{--primary:#1a3a6b;--primary-light:#2355a0;--accent:#f59e0b;--accent-dark:#d97706;--success:#16a34a;--danger:#dc2626;--info:#0891b2;--bg-page:#f0f4f8;--bg-card:#ffffff;--text-main:#1e293b;--text-muted:#64748b;--border:#e2e8f0;--radius:12px;--shadow-sm:0 2px 8px rgba(26,58,107,.08);--shadow-md:0 6px 24px rgba(26,58,107,.12);--transition:.2s ease}*{box-sizing:border-box}body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg-page);color:var(--text-main);font-size:15px;line-height:1.6}
+
+  .sga-navbar{background:var(--primary);box-shadow:0 2px 16px rgba(0,0,0,.2);padding:.6rem 0}
+  .brand-icon{width:38px;height:38px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--primary)}
+  .brand-icon-sm{width:30px;height:30px;font-size:1rem}
+  .brand-name{font-size:1.1rem;font-weight:700;color:#fff;line-height:1}
+  .brand-sub{font-size:.65rem;color:rgba(255,255,255,.6);letter-spacing:.03em}
+  .sga-navbar .nav-link{color:rgba(255,255,255,.8)!important;font-size:.88rem;padding:.45rem .75rem!important;border-radius:6px;transition:var(--transition)}
+  .sga-navbar .nav-link:hover,.sga-navbar .nav-link.active{color:#fff!important;background:rgba(255,255,255,.12)}
+  .sga-navbar .btn-primary{background:var(--accent);border-color:var(--accent);color:var(--primary);font-weight:600}
+  .sga-navbar .btn-primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+
+  .page-header{background:linear-gradient(135deg,var(--primary),var(--primary-light));padding:2.5rem 0;color:#fff}
+  .page-header h1{font-size:1.8rem;font-weight:800;margin-bottom:.25rem}
+  .page-header p{color:rgba(255,255,255,.75);margin:0}
+  .breadcrumb-item a{color:rgba(255,255,255,.7);text-decoration:none}
+  .breadcrumb-item.active{color:rgba(255,255,255,.9)}
+  .breadcrumb-item+.breadcrumb-item::before{color:rgba(255,255,255,.4)}
+
+  .form-card{background:var(--bg-card);border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow-sm);border:1px solid var(--border)}
+  .form-label{font-weight:600;font-size:.88rem;color:var(--text-main);margin-bottom:.35rem}
+  .form-control,.form-select{border:1.5px solid var(--border);border-radius:8px;padding:.6rem .9rem;font-size:.92rem;transition:var(--transition)}
+  .form-control:focus,.form-select:focus{border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(35,85,160,.12)}
+  .form-section-title{font-size:1rem;font-weight:700;color:var(--primary);padding-bottom:.5rem;border-bottom:2px solid var(--accent);margin-bottom:1.25rem}
+
+  .disc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+  .disc-item{border:1.5px solid var(--border);border-radius:10px;padding:.85rem 1rem;cursor:pointer;transition:var(--transition);display:flex;align-items:flex-start;gap:.75rem}
+  .disc-item:hover{border-color:var(--primary-light);background:#f0f6ff}
+  .disc-item.selected{border-color:var(--primary-light);background:rgba(35,85,160,.07)}
+  .disc-item input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin-top:2px;accent-color:var(--primary-light)}
+  .disc-name{font-weight:600;font-size:.88rem;color:var(--text-main);margin-bottom:2px}
+  .disc-meta{font-size:.75rem;color:var(--text-muted)}
+  .disc-badge{font-size:.68rem;padding:.2rem .5rem;border-radius:20px}
+
+  .status-badge{display:inline-flex;align-items:center;gap:.35rem;font-size:.8rem;font-weight:600;padding:.35rem .85rem;border-radius:20px}
+  .status-pendente{background:#fef3c7;color:#92400e}
+  .status-validada{background:#dcfce7;color:#166534}
+  .status-rejeitada{background:#fee2e2;color:#991b1b}
+
+  .toast-container{position:fixed;top:80px;right:20px;z-index:9999}
+  .loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;z-index:9999;display:none}
+  .loading-overlay.show{display:flex}
+
+  .sga-footer{background:#0f2444;padding:3rem 0 1.5rem;margin-top:auto}
+
+  /* Step pills (do HTML) */
+  .step-pill{display:flex;align-items:center;gap:.5rem;padding:.45rem 1.1rem;border-radius:30px;font-size:.82rem;font-weight:600;background:#e2e8f0;color:#64748b;transition:.2s}
+  .step-pill span{width:22px;height:22px;border-radius:50%;background:#94a3b8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
+  .step-pill.active{background:#1a3a6b;color:#fff}
+  .step-pill.active span{background:#f59e0b;color:#1a3a6b}
+  .step-pill.done{background:#dcfce7;color:#166534}
+  .step-pill.done span{background:#16a34a;color:#fff}
+  .step-line{flex:1;height:2px;background:#e2e8f0;max-width:60px}
+
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sga-navbar sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div>
+        <span class="brand-name">SGA</span>
+        <span class="brand-sub d-block">Sistema de Gestão Académica</span>
+      </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house me-1"></i>Início</a></li>
+        <li class="nav-item"><a class="nav-link active" href="inscricao.html"><i class="bi bi-pencil-square me-1"></i>Inscrição</a></li>
+        <li class="nav-item"><a class="nav-link" href="consulta.html"><i class="bi bi-search me-1"></i>Consultar</a></li>
+        <li class="nav-item"><a class="nav-link" href="propinas.html"><i class="bi bi-credit-card me-1"></i>Propinas</a></li>
+        <li class="nav-item"><a class="nav-link" href="horario.html"><i class="bi bi-calendar3 me-1"></i>Horário</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-2">
+        <li class="breadcrumb-item"><a href="index.html">Início</a></li>
+        <li class="breadcrumb-item active">Inscrição em Disciplinas</li>
+      </ol>
+    </nav>
+    <h1><i class="bi bi-pencil-square me-2"></i>Inscrição em Disciplinas</h1>
+    <p>Preencha o formulário com cuidado. Após validação receberá um email com o comprovativo.</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-center mb-4 gap-0">
+    <div class="step-pill active" id="sp1"><span>1</span> Identificação</div>
+    <div class="step-line"></div>
+    <div class="step-pill" id="sp2"><span>2</span> Disciplinas</div>
+    <div class="step-line"></div>
+    <div class="step-pill" id="sp3"><span>3</span> Confirmação</div>
+  </div>
+
+  <div id="step1">
+    <div class="form-card">
+      <h5 class="form-section-title"><i class="bi bi-person-fill me-2"></i>Dados do Estudante</h5>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Número de Estudante <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="numAluno" placeholder="Ex: 2024001234" maxlength="12" />
+          <div class="invalid-feedback">Número de estudante inválido.</div>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">Nome Completo <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="nomeEstudante" placeholder="Nome completo conforme documento de identidade" />
+          <div class="invalid-feedback">Nome obrigatório.</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Email Institucional <span class="text-danger">*</span></label>
+          <input type="email" class="form-control" id="emailEstudante" placeholder="estudante@instic.ao" />
+          <div class="invalid-feedback">Email inválido.</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Telefone <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <span class="input-group-text">+244</span>
+            <input type="tel" class="form-control" id="telefone" placeholder="9XX XXX XXX" maxlength="9" />
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Curso <span class="text-danger">*</span></label>
+          <select class="form-select" id="cursoSelect" onchange="carregarDisciplinas()">
+            <option value="">Seleccione o curso...</option>
+            <option value="LEI">Lic. Engenharia Informática</option>
+            <option value="LGI">Lic. Gestão de Informática</option>
+            <option value="LCC">Lic. Ciências da Computação</option>
+            <option value="TSI">Tec. Sistemas de Informação</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Ano do Curso <span class="text-danger">*</span></label>
+          <select class="form-select" id="anoCurso" onchange="carregarDisciplinas()">
+            <option value="">Seleccione o ano...</option>
+            <option value="1">1.º Ano</option>
+            <option value="2">2.º Ano</option>
+            <option value="3">3.º Ano</option>
+            <option value="4">4.º Ano</option>
+            <option value="5">5.º Ano</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Ano Lectivo <span class="text-danger">*</span></label>
+          <select class="form-select" id="anoLectivo">
+            <option value="2025/2026" selected>2025 / 2026</option>
+            <option value="2026/2027">2026 / 2027</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="form-label">Observações</label>
+          <textarea class="form-control" id="observacoes" rows="2" placeholder="Observações adicionais (opcional)..."></textarea>
+        </div>
+      </div>
+      <div class="d-flex justify-content-end mt-4">
+        <button class="btn btn-primary px-4" onclick="validarStep1()">
+          Próximo <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="step2" style="display:none">
+    <div class="form-card">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="form-section-title mb-0"><i class="bi bi-list-check me-2"></i>Selecção de Disciplinas</h5>
+        <span class="badge bg-primary" id="contadorDisc">0 seleccionadas</span>
+      </div>
+      <div class="alert alert-info d-flex gap-2 mb-3">
+        <i class="bi bi-info-circle-fill flex-shrink-0 mt-1"></i>
+        <span>Seleccione entre <strong>4 a 6 disciplinas</strong>. Disciplinas com <span class="badge bg-danger">Lotado</span> não estão disponíveis.</span>
+      </div>
+
+      <div id="disciplinasContainer">
+        <div class="text-center text-muted py-4">
+          <i class="bi bi-arrow-up-circle fs-3 d-block mb-2"></i>
+          Seleccione o curso e o ano para ver as disciplinas disponíveis.
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-outline-secondary px-4" onclick="goStep(1)">
+          <i class="bi bi-arrow-left me-1"></i> Anterior
+        </button>
+        <button class="btn btn-primary px-4" onclick="validarStep2()">
+          Próximo <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="step3" style="display:none">
+    <div class="form-card">
+      <h5 class="form-section-title"><i class="bi bi-check2-all me-2"></i>Confirmar Inscrição</h5>
+      <div class="alert alert-warning d-flex gap-2 mb-4">
+        <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+        <span>Verifique atentamente os dados abaixo antes de submeter. Após a submissão não é possível alterar as disciplinas.</span>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3">
+            <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-person me-2"></i>Dados Pessoais</h6>
+            <table class="table table-sm mb-0">
+              <tr><td class="text-muted" style="width:40%">N.º Aluno</td><td id="conf-num" class="fw-semibold"></td></tr>
+              <tr><td class="text-muted">Nome</td><td id="conf-nome"></td></tr>
+              <tr><td class="text-muted">Email</td><td id="conf-email"></td></tr>
+              <tr><td class="text-muted">Curso</td><td id="conf-curso"></td></tr>
+              <tr><td class="text-muted">Ano</td><td id="conf-ano"></td></tr>
+              <tr><td class="text-muted">Ano Lectivo</td><td id="conf-lectivo"></td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 bg-light rounded-3">
+            <h6 class="fw-bold mb-3 text-primary"><i class="bi bi-list-check me-2"></i>Disciplinas Seleccionadas</h6>
+            <ul id="conf-disciplinas" class="list-group list-group-flush"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-check mt-4">
+        <input class="form-check-input" type="checkbox" id="declaroCheck" />
+        <label class="form-check-label" for="declaroCheck">
+          Declaro que as informações fornecidas são correctas e assumo a responsabilidade pelos dados submetidos.
+        </label>
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <button class="btn btn-outline-secondary px-4" onclick="goStep(2)">
+          <i class="bi bi-arrow-left me-1"></i> Anterior
+        </button>
+        <button class="btn btn-success px-4" id="btnSubmeter" onclick="submeterInscricao()">
+          <i class="bi bi-send-check me-1"></i> Submeter Inscrição
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="stepSucesso" style="display:none">
+    <div class="form-card text-center py-5">
+      <div class="mb-3" style="font-size:4rem">🎓</div>
+      <h3 class="text-success fw-bold">Inscrição Submetida!</h3>
+      <p class="text-muted mb-1">O teu pedido foi registado com sucesso.</p>
+      <p class="mb-4">Receberás um email de confirmação em <strong id="sucesso-email"></strong> em breve.</p>
+      <div class="bg-light rounded-3 p-3 d-inline-block mb-4">
+        <span class="text-muted small">Número de referência</span>
+        <div class="fw-bold fs-5 text-primary" id="sucesso-ref"></div>
+      </div>
+      <div class="d-flex justify-content-center gap-3 flex-wrap">
+        <a href="consulta.html" class="btn btn-primary px-4">
+          <i class="bi bi-search me-1"></i>Acompanhar Estado
+        </a>
+        <a href="index.html" class="btn btn-outline-secondary px-4">
+          <i class="bi bi-house me-1"></i>Início
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sga-footer mt-5">
+  <div class="container">
+    <p class="text-center text-muted small mb-0">© 2026 INSTIC — Universidade de Luanda</p>
+  </div>
+</footer>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="text-center">
+    <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem"></div>
+    <p class="fw-semibold text-primary">A submeter inscrição...</p>
+  </div>
+</div>
+
+<div class="toast-container">
+  <div id="toastMsg" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JS inline (Google Sites friendly) -->
+<script>
+// ============================================================
+// SGA — inscricao.js (inline)
+// Lógica do formulário de inscrição em disciplinas
+// Integra com Google Apps Script via fetch (CORS mode)
+// ============================================================
+
+// CONFIGURAÇÃO — substitua pelo URL do Web App do Apps Script
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwg5nxVsrMcs4xQ3BzJ-a8sLuQF9xqJYV4_To69SNZS36xRBGdW9NprVh9keI8YBfVM/exec';
+
+const DISCIPLINAS_DB = {
+  LEI: {
+    1: [
+      { codigo: 'MAT101', nome: 'Matemática I', docente: 'Prof. João Silva',     vagas: 40, inscritos: 35, semestre: 1 },
+      { codigo: 'FIS101', nome: 'Física Geral',  docente: 'Prof. Maria Santos',   vagas: 40, inscritos: 38, semestre: 1 },
+      { codigo: 'INF101', nome: 'Introdução à Programação', docente: 'Prof. Carlos Lima', vagas: 35, inscritos: 30, semestre: 1 },
+      { codigo: 'ALG101', nome: 'Álgebra Linear', docente: 'Prof. Ana Rodrigues', vagas: 40, inscritos: 40, semestre: 1 },
+      { codigo: 'MAT102', nome: 'Matemática II', docente: 'Prof. João Silva',    vagas: 40, inscritos: 28, semestre: 2 },
+      { codigo: 'INF102', nome: 'Programação Estruturada', docente: 'Prof. Carlos Lima', vagas: 35, inscritos: 22, semestre: 2 },
+      { codigo: 'SIS101', nome: 'Sistemas Digitais', docente: 'Prof. Pedro Costa', vagas: 30, inscritos: 25, semestre: 2 },
+      { codigo: 'ENG101', nome: 'Inglês Técnico', docente: 'Prof. Susana Neto',  vagas: 45, inscritos: 20, semestre: 2 },
+    ],
+    2: [
+      { codigo: 'INF201', nome: 'Estruturas de Dados', docente: 'Prof. Carlos Lima', vagas: 35, inscritos: 30, semestre: 1 },
+      { codigo: 'BD201',  nome: 'Bases de Dados I',    docente: 'Prof. Luísa Ferreira', vagas: 35, inscritos: 34, semestre: 1 },
+      { codigo: 'SO201',  nome: 'Sistemas Operativos', docente: 'Prof. Rui Mendes', vagas: 35, inscritos: 28, semestre: 1 },
+      { codigo: 'MAT201', nome: 'Cálculo Numérico',    docente: 'Prof. João Silva', vagas: 40, inscritos: 20, semestre: 1 },
+      { codigo: 'INF202', nome: 'Programação Orientada a Objectos', docente: 'Prof. Carlos Lima', vagas: 35, inscritos: 35, semestre: 2 },
+      { codigo: 'BD202',  nome: 'Bases de Dados II',   docente: 'Prof. Luísa Ferreira', vagas: 35, inscritos: 18, semestre: 2 },
+      { codigo: 'REDES201', nome: 'Redes de Computadores I', docente: 'Prof. António Borges', vagas: 30, inscritos: 26, semestre: 2 },
+      { codigo: 'INF203', nome: 'Algoritmia Avançada', docente: 'Prof. Beatriz Sousa', vagas: 35, inscritos: 15, semestre: 2 },
+    ],
+    3: [
+      { codigo: 'IS301',  nome: 'Engenharia de Software', docente: 'Prof. Rui Mendes', vagas: 30, inscritos: 28, semestre: 1 },
+      { codigo: 'IA301',  nome: 'Inteligência Artificial', docente: 'Prof. Diana Cruz', vagas: 30, inscritos: 25, semestre: 1 },
+      { codigo: 'WEB301', nome: 'Desenvolvimento Web',    docente: 'Prof. Fábio Tavares', vagas: 30, inscritos: 30, semestre: 1 },
+      { codigo: 'SEC301', nome: 'Segurança Informática',  docente: 'Prof. Hélder Vieira', vagas: 25, inscritos: 20, semestre: 1 },
+      { codigo: 'MOB301', nome: 'Desenvolvimento Mobile', docente: 'Prof. Fábio Tavares', vagas: 25, inscritos: 22, semestre: 2 },
+      { codigo: 'CC301',  nome: 'Computação em Nuvem',    docente: 'Prof. Diana Cruz',   vagas: 25, inscritos: 18, semestre: 2 },
+      { codigo: 'PROJ301',nome: 'Gestão de Projectos TI', docente: 'Prof. Rui Mendes',   vagas: 30, inscritos: 24, semestre: 2 },
+      { codigo: 'DAD301', nome: 'Data Analytics',         docente: 'Prof. Beatriz Sousa',vagas: 25, inscritos: 10, semestre: 2 },
+    ],
+  },
+  LGI: {
+    1: [
+      { codigo: 'GES101', nome: 'Fundamentos de Gestão', docente: 'Prof. Isabel Morais', vagas: 45, inscritos: 40, semestre: 1 },
+      { codigo: 'INF111', nome: 'Introdução à Informática', docente: 'Prof. Carlos Lima', vagas: 45, inscritos: 35, semestre: 1 },
+      { codigo: 'MAT111', nome: 'Matemática para Gestão', docente: 'Prof. João Silva', vagas: 45, inscritos: 38, semestre: 1 },
+      { codigo: 'ECO101', nome: 'Economia Geral', docente: 'Prof. Nelson Alves', vagas: 45, inscritos: 42, semestre: 2 },
+    ],
+  },
+};
+
+const CURSO_LABELS = {
+  LEI: 'Lic. Engenharia Informática',
+  LGI: 'Lic. Gestão de Informática',
+  LCC: 'Lic. Ciências da Computação',
+  TSI: 'Tec. Sistemas de Informação',
+};
+
+let currentStep = 1;
+let disciplinasSelecionadas = [];
+
+function goStep(n) {
+  document.getElementById('step' + currentStep).style.display = 'none';
+  document.getElementById('sp' + currentStep).classList.remove('active');
+  document.getElementById('sp' + currentStep).classList.add('done');
+  currentStep = n;
+  document.getElementById('step' + n).style.display = 'block';
+  document.getElementById('sp' + n).classList.remove('done');
+  document.getElementById('sp' + n).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validarStep1() {
+  let ok = true;
+  const campos = [
+    { id: 'numAluno',       regex: /^\d{7,12}$/,         msg: 'Número de estudante inválido (7–12 dígitos).' },
+    { id: 'nomeEstudante',  regex: /^.{3,}/,              msg: 'Nome deve ter pelo menos 3 caracteres.' },
+    { id: 'emailEstudante', regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msg: 'Email inválido.' },
+    { id: 'telefone',       regex: /^\d{9}$/,              msg: 'Telefone deve ter 9 dígitos.' },
+  ];
+
+  campos.forEach(c => {
+    const el = document.getElementById(c.id);
+    if (!c.regex.test(el.value.trim())) {
+      el.classList.add('is-invalid');
+      el.nextElementSibling && (el.nextElementSibling.textContent = c.msg);
+      ok = false;
+    } else {
+      el.classList.remove('is-invalid');
+      el.classList.add('is-valid');
+    }
+  });
+
+  if (!document.getElementById('cursoSelect').value) {
+    mostrarToast('Seleccione o curso.', 'warning'); ok = false;
+  }
+  if (!document.getElementById('anoCurso').value) {
+    mostrarToast('Seleccione o ano do curso.', 'warning'); ok = false;
+  }
+  if (ok) goStep(2);
+}
+
+function carregarDisciplinas() {
+  const curso = document.getElementById('cursoSelect').value;
+  const ano   = parseInt(document.getElementById('anoCurso').value);
+  const cont  = document.getElementById('disciplinasContainer');
+
+  if (!curso || !ano) return;
+
+  const lista = (DISCIPLINAS_DB[curso] && DISCIPLINAS_DB[curso][ano]) || [];
+
+  if (!lista.length) {
+    cont.innerHTML = `<div class="alert alert-warning"><i class="bi bi-exclamation-circle me-2"></i>Não existem disciplinas configuradas para este curso/ano. Contacte a secretaria.</div>`;
+    return;
+  }
+
+  const s1 = lista.filter(d => d.semestre === 1);
+  const s2 = lista.filter(d => d.semestre === 2);
+
+  cont.innerHTML = `
+    ${renderSemestre('1.º Semestre', s1)}
+    ${renderSemestre('2.º Semestre', s2)}
+  `;
+
+  disciplinasSelecionadas = [];
+  atualizarContador();
+}
+
+function renderSemestre(label, disciplinas) {
+  if (!disciplinas.length) return '';
+  return `
+    <h6 class="text-muted fw-bold mb-2 mt-3"><i class="bi bi-calendar2-week me-2"></i>${label}</h6>
+    <div class="disc-grid mb-3">
+      ${disciplinas.map(d => renderDisciplina(d)).join('')}
+    </div>
+  `;
+}
+
+function renderDisciplina(d) {
+  const lotado = d.inscritos >= d.vagas;
+  const pct    = Math.round((d.inscritos / d.vagas) * 100);
+  return `
+    <label class="disc-item${lotado ? ' opacity-60' : ''}" onclick="${lotado ? '' : `toggleDisc('${d.codigo}')`}" id="disc-${d.codigo}">
+      <input type="checkbox" id="chk-${d.codigo}" ${lotado ? 'disabled' : ''} onclick="event.stopPropagation(); toggleDisc('${d.codigo}')" />
+      <div style="flex:1">
+        <div class="disc-name">${d.nome}</div>
+        <div class="disc-meta"><i class="bi bi-person me-1"></i>${d.docente}</div>
+        <div class="disc-meta mt-1">
+          <span class="disc-badge ${lotado ? 'bg-danger text-white' : pct >= 80 ? 'bg-warning text-dark' : 'bg-success-soft text-success'}">
+            ${lotado ? 'Lotado' : `${d.inscritos}/${d.vagas} vagas`}
+          </span>
+          <span class="disc-badge bg-light text-muted ms-1">${d.codigo}</span>
+        </div>
+      </div>
+    </label>
+  `;
+}
+
+function toggleDisc(codigo) {
+  const chk  = document.getElementById('chk-' + codigo);
+  const item = document.getElementById('disc-' + codigo);
+  if (chk.disabled) return;
+
+  if (disciplinasSelecionadas.includes(codigo)) {
+    disciplinasSelecionadas = disciplinasSelecionadas.filter(c => c !== codigo);
+    chk.checked = false;
+    item.classList.remove('selected');
+  } else {
+    if (disciplinasSelecionadas.length >= 6) {
+      mostrarToast('Máximo de 6 disciplinas permitido.', 'warning');
+      return;
+    }
+    disciplinasSelecionadas.push(codigo);
+    chk.checked = true;
+    item.classList.add('selected');
+  }
+
+  atualizarContador();
+}
+
+function atualizarContador() {
+  document.getElementById('contadorDisc').textContent = `${disciplinasSelecionadas.length} seleccionada(s)`;
+}
+
+function validarStep2() {
+  if (disciplinasSelecionadas.length < 4) {
+    mostrarToast('Seleccione pelo menos 4 disciplinas.', 'danger');
+    return;
+  }
+  preencherConfirmacao();
+  goStep(3);
+}
+
+function preencherConfirmacao() {
+  const curso = document.getElementById('cursoSelect').value;
+  const ano   = document.getElementById('anoCurso').value;
+
+  document.getElementById('conf-num').textContent     = document.getElementById('numAluno').value;
+  document.getElementById('conf-nome').textContent    = document.getElementById('nomeEstudante').value;
+  document.getElementById('conf-email').textContent   = document.getElementById('emailEstudante').value;
+  document.getElementById('conf-curso').textContent   = CURSO_LABELS[curso] || curso;
+  document.getElementById('conf-ano').textContent     = ano + '.º Ano';
+  document.getElementById('conf-lectivo').textContent = document.getElementById('anoLectivo').value;
+
+  const ul = document.getElementById('conf-disciplinas');
+  ul.innerHTML = '';
+
+  const allDiscs = Object.values(DISCIPLINAS_DB[curso]?.[parseInt(ano)] || []);
+  disciplinasSelecionadas.forEach(cod => {
+    const d = allDiscs.find(x => x.codigo === cod);
+    if (d) {
+      ul.innerHTML += `
+        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1 border-0">
+          <span><i class="bi bi-check2-circle text-success me-2"></i>${d.nome}</span>
+          <small class="text-muted">${d.codigo}</small>
+        </li>`;
+    }
+  });
+}
+
+async function submeterInscricao() {
+  if (!document.getElementById('declaroCheck').checked) {
+    mostrarToast('Confirme a declaração antes de submeter.', 'warning');
+    return;
+  }
+  document.getElementById('loadingOverlay').classList.add('show');
+
+  const payload = {
+    action:          'submitInscricao',
+    numAluno:        document.getElementById('numAluno').value,
+    nome:            document.getElementById('nomeEstudante').value,
+    email:           document.getElementById('emailEstudante').value,
+    telefone:        '+244' + document.getElementById('telefone').value,
+    curso:           document.getElementById('cursoSelect').value,
+    anoCurso:        document.getElementById('anoCurso').value,
+    anoLectivo:      document.getElementById('anoLectivo').value,
+    disciplinas:     disciplinasSelecionadas.join(','),
+    observacoes:     document.getElementById('observacoes').value,
+    timestamp:       new Date().toISOString(),
+  };
+
+  try {
+    // Simulação (remover em produção e usar o fetch real abaixo)
+    await simularEnvio(payload);
+    document.getElementById('loadingOverlay').classList.remove('show');
+    mostrarSucesso(payload);
+  } catch (err) {
+    document.getElementById('loadingOverlay').classList.remove('show');
+    mostrarToast('Erro ao submeter. Tente novamente.', 'danger');
+    console.error(err);
+  }
+}
+
+async function enviarAoAppsScript(payload) {
+  const resp = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return resp;
+}
+
+async function simularEnvio(payload) {
+  await new Promise(r => setTimeout(r, 1800));
+  const inscricoes = JSON.parse(localStorage.getItem('sga_inscricoes') || '[]');
+  const ref = 'INS-' + new Date().getFullYear() + '-' + String(Math.floor(Math.random()*9000)+1000);
+  inscricoes.push({ ...payload, ref, estado: 'Pendente', data: new Date().toLocaleDateString('pt-PT') });
+  localStorage.setItem('sga_inscricoes', JSON.stringify(inscricoes));
+  payload._ref = ref;
+}
+
+function mostrarSucesso(payload) {
+  document.getElementById('step3').style.display = 'none';
+  document.getElementById('stepSucesso').style.display = 'block';
+  document.getElementById('sucesso-email').textContent = payload.email;
+  document.getElementById('sucesso-ref').textContent = payload._ref || 'INS-2026-XXXX';
+}
+
+function mostrarToast(msg, tipo = 'info') {
+  const toastEl = document.getElementById('toastMsg');
+  const body    = document.getElementById('toastBody');
+  toastEl.className = `toast align-items-center border-0 text-bg-${tipo}`;
+  body.textContent = msg;
+  const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+  toast.show();
+}
+</script>
+
+</body>
+</html>
+

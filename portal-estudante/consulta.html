@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SGA — Consultar Inscrição</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="styles.css" rel="stylesheet" />
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sga-navbar sticky-top">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+      <div class="brand-icon"><i class="bi bi-mortarboard-fill"></i></div>
+      <div><span class="brand-name">SGA</span><span class="brand-sub d-block">Sistema de Gestão Académica</span></div>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-house me-1"></i>Início</a></li>
+        <li class="nav-item"><a class="nav-link" href="inscricao.html"><i class="bi bi-pencil-square me-1"></i>Inscrição</a></li>
+        <li class="nav-item"><a class="nav-link active" href="consulta.html"><i class="bi bi-search me-1"></i>Consultar</a></li>
+        <li class="nav-item"><a class="nav-link" href="propinas.html"><i class="bi bi-credit-card me-1"></i>Propinas</a></li>
+        <li class="nav-item"><a class="nav-link" href="horario.html"><i class="bi bi-calendar3 me-1"></i>Horário</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb mb-2">
+      <li class="breadcrumb-item"><a href="index.html">Início</a></li>
+      <li class="breadcrumb-item active">Consultar Inscrição</li>
+    </ol></nav>
+    <h1><i class="bi bi-search me-2"></i>Consultar Inscrição</h1>
+    <p>Verifique o estado da sua inscrição e descarregue o comprovativo.</p>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+
+      <!-- PESQUISA -->
+      <div class="form-card mb-4">
+        <h5 class="form-section-title"><i class="bi bi-search me-2"></i>Pesquisar Inscrição</h5>
+        <div class="row g-3">
+          <div class="col-md-5">
+            <label class="form-label">Número de Estudante</label>
+            <input type="text" class="form-control" id="pesqNum" placeholder="Ex: 2024001234" />
+          </div>
+          <div class="col-md-5">
+            <label class="form-label">Número de Referência</label>
+            <input type="text" class="form-control" id="pesqRef" placeholder="Ex: INS-2026-1234" />
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100" onclick="pesquisar()">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTADO -->
+      <div id="resultadoContainer" style="display:none">
+
+        <!-- Card de estado -->
+        <div class="form-card mb-3" id="cardEstado">
+          <div class="d-flex align-items-start justify-content-between mb-3">
+            <div>
+              <h5 class="fw-bold text-primary mb-1" id="res-nome"></h5>
+              <span class="text-muted small" id="res-num"></span>
+            </div>
+            <div id="res-status-badge"></div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-sm-4">
+              <div class="bg-light rounded-3 p-2 text-center">
+                <div class="small text-muted">Referência</div>
+                <div class="fw-bold text-primary small" id="res-ref"></div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="bg-light rounded-3 p-2 text-center">
+                <div class="small text-muted">Curso</div>
+                <div class="fw-bold small" id="res-curso"></div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="bg-light rounded-3 p-2 text-center">
+                <div class="small text-muted">Data Submissão</div>
+                <div class="fw-bold small" id="res-data"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline de estado -->
+          <div class="timeline mb-3">
+            <div class="tl-item done">
+              <div class="tl-icon"><i class="bi bi-check-lg"></i></div>
+              <div class="tl-body"><strong>Inscrição submetida</strong><br><small class="text-muted" id="tl-data1"></small></div>
+            </div>
+            <div class="tl-item" id="tl-validacao">
+              <div class="tl-icon"><i class="bi bi-hourglass-split"></i></div>
+              <div class="tl-body"><strong>Validação pela secretaria</strong><br><small class="text-muted">Em análise...</small></div>
+            </div>
+            <div class="tl-item" id="tl-comprovativo">
+              <div class="tl-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+              <div class="tl-body"><strong>Comprovativo emitido</strong><br><small class="text-muted">Aguarda validação</small></div>
+            </div>
+          </div>
+
+          <!-- Disciplinas -->
+          <h6 class="fw-bold text-primary mb-2">Disciplinas Inscritas</h6>
+          <ul id="res-disciplinas" class="list-group list-group-flush mb-3"></ul>
+
+          <!-- Botões de acção -->
+          <div class="d-flex gap-2 flex-wrap" id="botoesAcao">
+            <button class="btn btn-outline-primary" onclick="descarregarComprovativo()" id="btnComprovativo" disabled>
+              <i class="bi bi-file-earmark-arrow-down me-1"></i>Descarregar Comprovativo
+            </button>
+            <button class="btn btn-outline-secondary" onclick="descarregarDeclaracao()" id="btnDeclaracao" disabled>
+              <i class="bi bi-file-text me-1"></i>Declaração de Matrícula
+            </button>
+          </div>
+        </div>
+
+        <!-- Aviso pendente -->
+        <div class="alert alert-warning d-flex gap-2" id="avisoPendente" style="display:none!important">
+          <i class="bi bi-clock-history flex-shrink-0 mt-1"></i>
+          <div>
+            <strong>Inscrição em análise</strong><br>
+            A sua inscrição está a ser analisada pela secretaria académica. Receberá um email quando for validada. Prazo: até 3 dias úteis.
+          </div>
+        </div>
+      </div>
+
+      <!-- NENHUM RESULTADO -->
+      <div id="semResultado" style="display:none">
+        <div class="form-card text-center py-5">
+          <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
+          <h5 class="text-muted">Nenhuma inscrição encontrada</h5>
+          <p class="text-muted">Verifique o número de estudante ou a referência introduzida.</p>
+          <a href="inscricao.html" class="btn btn-primary mt-2">
+            <i class="bi bi-plus-circle me-1"></i>Fazer Nova Inscrição
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer class="sga-footer mt-5">
+  <div class="container">
+    <p class="text-center text-muted small mb-0">© 2026 INSTIC — Universidade de Luanda</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const CURSO_LABELS = { LEI: 'Lic. Engenharia Informática', LGI: 'Lic. Gestão de Informática', LCC: 'Lic. Ciências da Computação', TSI: 'Tec. Sistemas de Informação' };
+
+function pesquisar() {
+  const num = document.getElementById('pesqNum').value.trim();
+  const ref = document.getElementById('pesqRef').value.trim();
+  if (!num && !ref) { alert('Introduza o número de estudante ou a referência.'); return; }
+
+  const inscricoes = JSON.parse(localStorage.getItem('sga_inscricoes') || '[]');
+  let found = inscricoes.find(i =>
+    (num && i.numAluno === num) ||
+    (ref && i.ref === ref)
+  );
+
+  // Demo: se não houver dados reais, mostrar exemplo
+  if (!found && (num === 'DEMO' || ref === 'INS-2026-DEMO')) {
+    found = {
+      ref: 'INS-2026-DEMO', numAluno: 'DEMO', nome: 'Estudante Demo',
+      email: 'demo@instic.ao', curso: 'LEI', anoCurso: '2',
+      anoLectivo: '2025/2026', estado: 'Validada',
+      data: new Date().toLocaleDateString('pt-PT'),
+      disciplinas: 'INF201,BD201,SO201,INF202',
+    };
+  }
+
+  if (found) {
+    mostrarResultado(found);
+  } else {
+    document.getElementById('resultadoContainer').style.display = 'none';
+    document.getElementById('semResultado').style.display = 'block';
+  }
+}
+
+function mostrarResultado(insc) {
+  document.getElementById('semResultado').style.display = 'none';
+  document.getElementById('resultadoContainer').style.display = 'block';
+
+  document.getElementById('res-nome').textContent  = insc.nome;
+  document.getElementById('res-num').textContent   = 'N.º ' + insc.numAluno + ' · ' + (CURSO_LABELS[insc.curso] || insc.curso);
+  document.getElementById('res-ref').textContent   = insc.ref;
+  document.getElementById('res-curso').textContent = insc.anoCurso + '.º Ano';
+  document.getElementById('res-data').textContent  = insc.data;
+  document.getElementById('tl-data1').textContent  = insc.data;
+
+  // Badge de estado
+  const badges = {
+    'Pendente':  '<span class="status-badge status-pendente"><i class="bi bi-hourglass-split"></i>Pendente</span>',
+    'Validada':  '<span class="status-badge status-validada"><i class="bi bi-check-circle-fill"></i>Validada</span>',
+    'Rejeitada': '<span class="status-badge status-rejeitada"><i class="bi bi-x-circle-fill"></i>Rejeitada</span>',
+  };
+  document.getElementById('res-status-badge').innerHTML = badges[insc.estado] || badges['Pendente'];
+
+  // Timeline
+  if (insc.estado === 'Validada') {
+    document.getElementById('tl-validacao').classList.add('done');
+    document.getElementById('tl-comprovativo').classList.add('done');
+    document.getElementById('btnComprovativo').disabled = false;
+    document.getElementById('btnDeclaracao').disabled = false;
+  } else if (insc.estado === 'Pendente') {
+    document.getElementById('avisoPendente').style.display = 'flex';
+  }
+
+  // Disciplinas (mock lookup)
+  const ul = document.getElementById('res-disciplinas');
+  ul.innerHTML = '';
+  const discs = (insc.disciplinas || '').split(',').filter(Boolean);
+  discs.forEach(cod => {
+    ul.innerHTML += `
+      <li class="list-group-item d-flex justify-content-between px-0 py-2 border-bottom">
+        <span><i class="bi bi-book me-2 text-primary"></i>${cod}</span>
+        <span class="badge bg-light text-dark">${cod}</span>
+      </li>`;
+  });
+}
+
+function descarregarComprovativo() {
+  gerarPDFSimulado('Comprovativo de Inscrição');
+}
+function descarregarDeclaracao() {
+  gerarPDFSimulado('Declaração de Matrícula');
+}
+
+function gerarPDFSimulado(tipo) {
+  // Em produção: chamar Apps Script para gerar PDF real
+  alert(`A abrir ${tipo} em PDF...\n\nEm produção, este botão chama o Google Apps Script que gera o PDF a partir do template Google Docs e retorna o link do Google Drive.`);
+}
+</script>
+
+<style>
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item  { display: flex; gap: .75rem; padding: .5rem 0; position: relative; }
+.tl-item:not(:last-child)::after { content: ''; position: absolute; left: 13px; top: 32px; width: 2px; height: calc(100% - 12px); background: #e2e8f0; }
+.tl-item.done .tl-icon { background: #16a34a; border-color: #16a34a; color: #fff; }
+.tl-icon  { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #fff; display: flex; align-items: center; justify-content: center; font-size: .8rem; flex-shrink: 0; z-index: 1; color: #94a3b8; }
+.tl-body  { font-size: .85rem; padding-top: 3px; }
+</style>
+</body>
+</html>
